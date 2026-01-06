@@ -1,5 +1,7 @@
 package com.example.demo.client;
 
+import com.example.demo.Message;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -58,7 +60,7 @@ public class ClientGUI extends JFrame {
         messagePanel.setBackground(Utilities.TRANSPARENT_COLOR);
         chatPanel.add(messagePanel, BorderLayout.CENTER);
 
-        messagePanel.add(new JLabel("Random Message"));
+        messagePanel.add(createChatMessageComponent(new Message("HelloWorld", "test")));
 
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(Utilities.addPadding(10, 10, 10, 10));
@@ -76,5 +78,24 @@ public class ClientGUI extends JFrame {
 
         add(chatPanel, BorderLayout.CENTER);
 
+    }
+
+    private JPanel createChatMessageComponent(Message message){
+        JPanel chatMessage = new JPanel();
+        chatMessage.setBackground(Utilities.TRANSPARENT_COLOR);
+        chatMessage.setLayout(new BoxLayout(chatMessage, BoxLayout.Y_AXIS));
+        chatMessage.setBorder(Utilities.addPadding(20, 20, 20, 20));
+
+        JLabel usernameLabel = new JLabel(message.getUser());
+        usernameLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+        usernameLabel.setForeground(Utilities.TEXT_COLOR);
+        chatMessage.add(usernameLabel);
+
+        JLabel messageLabel = new JLabel(message.getMessage());
+        messageLabel.setFont(new Font("Monospaced", Font.PLAIN, 18));
+        messageLabel.setForeground(Utilities.TEXT_COLOR);
+        chatMessage.add(messageLabel);
+
+        return chatMessage;
     }
 }
