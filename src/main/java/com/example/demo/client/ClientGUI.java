@@ -4,6 +4,8 @@ import com.example.demo.Message;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -60,14 +62,26 @@ public class ClientGUI extends JFrame {
         messagePanel.setBackground(Utilities.TRANSPARENT_COLOR);
         chatPanel.add(messagePanel, BorderLayout.CENTER);
 
-        messagePanel.add(createChatMessageComponent(new Message("HelloWorld", "test")));
-
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(Utilities.addPadding(10, 10, 10, 10));
         inputPanel.setLayout(new BorderLayout());
         inputPanel.setBackground(Utilities.TRANSPARENT_COLOR);
 
         JTextField inputField = new JTextField();
+        inputField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(e.getKeyChar() == KeyEvent.VK_ENTER){
+                    String input = inputField.getText();
+
+                    inputField.setText("");
+
+                    messagePanel.add(createChatMessageComponent(new Message(input, "testUser")));
+                    repaint();
+                    revalidate();
+                }
+            }
+        });
         inputField.setBackground(Utilities.SECONDARY_COLOR);
         inputField.setForeground(Utilities.TEXT_COLOR);
         inputField.setFont(new Font("Monospaced", Font.PLAIN, 16));
