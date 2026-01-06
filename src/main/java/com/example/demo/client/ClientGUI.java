@@ -74,6 +74,7 @@ public class ClientGUI extends JFrame {
                 if(e.getKeyChar() == KeyEvent.VK_ENTER){
                     String input = inputField.getText();
 
+                    if(input.isEmpty()) return;
                     inputField.setText("");
 
                     messagePanel.add(createChatMessageComponent(new Message(input, "testUser")));
