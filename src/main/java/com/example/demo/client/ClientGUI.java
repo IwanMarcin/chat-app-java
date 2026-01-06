@@ -35,6 +35,7 @@ public class ClientGUI extends JFrame {
 
     private void addConnectedUserComponents(){
         connectedUsersPanel = new JPanel();
+        connectedUsersPanel.setBorder(Utilities.addPadding(10,10, 10, 10));
         connectedUsersPanel.setLayout(new BoxLayout(connectedUsersPanel, BoxLayout.Y_AXIS));
         connectedUsersPanel.setBackground(Utilities.SECONDARY_COLOR);
         connectedUsersPanel.setPreferredSize(new Dimension(200, getHeight()));
@@ -60,6 +61,7 @@ public class ClientGUI extends JFrame {
         messagePanel.add(new JLabel("Random Message"));
 
         JPanel inputPanel = new JPanel();
+        inputPanel.setBorder(Utilities.addPadding(10, 10, 10, 10));
         inputPanel.setLayout(new BorderLayout());
         inputPanel.setBackground(Utilities.TRANSPARENT_COLOR);
 
