@@ -59,6 +59,19 @@ public class ClientGUI extends JFrame {
 
         messagePanel.add(new JLabel("Random Message"));
 
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.setBackground(Utilities.TRANSPARENT_COLOR);
+
+        JTextField inputField = new JTextField();
+        inputField.setBackground(Utilities.SECONDARY_COLOR);
+        inputField.setForeground(Utilities.TEXT_COLOR);
+        inputField.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        inputField.setPreferredSize(new Dimension(inputPanel.getWidth(), 50));
+        inputPanel.add(inputField, BorderLayout.CENTER);
+        chatPanel.add(inputPanel, BorderLayout.SOUTH);
+
+
         add(chatPanel, BorderLayout.CENTER);
 
     }
