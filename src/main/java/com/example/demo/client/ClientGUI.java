@@ -87,6 +87,8 @@ public class ClientGUI extends JFrame {
                     messagePanel.add(createChatMessageComponent(new Message(input, "testUser")));
                     repaint();
                     revalidate();
+
+                    chatStompClient.sendMessage(new Message(input, username));
                 }
             }
         });
