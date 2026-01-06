@@ -8,9 +8,23 @@ public class App {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ClientGUI clientGUI = null;
+                String username = JOptionPane.showInputDialog(null,
+                        "Enter your username (please use max 16 characters): ",
+                        "Chat Application",
+                        JOptionPane.QUESTION_MESSAGE);
+
+                if(username == null || username.isEmpty() || username.length() > 16){
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid Username",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                ClientGUI clientGUI;
+
                 try {
-                    clientGUI = new ClientGUI("testUser");
+                    clientGUI = new ClientGUI(username);
                 } catch (ExecutionException e) {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e) {

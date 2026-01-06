@@ -1,16 +1,15 @@
 package com.example.demo.client;
 
 import com.example.demo.Message;
+import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-public class ClientGUI extends JFrame {
+public class ClientGUI extends JFrame implements MessageListener {
     private JPanel connectedUsersPanel, messagePanel;
     private ChatStompClient chatStompClient;
     private String username;
@@ -18,7 +17,7 @@ public class ClientGUI extends JFrame {
     public ClientGUI(String username) throws ExecutionException, InterruptedException {
         super("User: " + username);
         this.username = username;
-        chatStompClient = new ChatStompClient(username);
+        chatStompClient = new ChatStompClient(this, username);
 
         setSize(1280, 720);
         setLocationRelativeTo(null);
@@ -84,21 +83,17 @@ public class ClientGUI extends JFrame {
                     if(input.isEmpty()) return;
                     inputField.setText("");
 
-                    messagePanel.add(createChatMessageComponent(new Message(input, "testUser")));
-                    repaint();
-                    revalidate();
-
                     chatStompClient.sendMessage(new Message(input, username));
                 }
             }
         });
         inputField.setBackground(Utilities.SECONDARY_COLOR);
         inputField.setForeground(Utilities.TEXT_COLOR);
+        inputField.setBorder(Utilities.addPadding(0, 10, 0, 10));
         inputField.setFont(new Font("Monospaced", Font.PLAIN, 16));
         inputField.setPreferredSize(new Dimension(inputPanel.getWidth(), 50));
         inputPanel.add(inputField, BorderLayout.CENTER);
         chatPanel.add(inputPanel, BorderLayout.SOUTH);
-
 
         add(chatPanel, BorderLayout.CENTER);
 
@@ -121,5 +116,35 @@ public class ClientGUI extends JFrame {
         chatMessage.add(messageLabel);
 
         return chatMessage;
+    }
+
+    @Override
+    public void onMessageRecieve(Message message) {
+        messagePanel.add(createChatMessageComponent(message));
+        revalidate();
+        repaint();
+    }
+
+    @Override
+    public void onActiveUsersUpdate(ArrayList<String> activeUsers) {
+        if(connectedUsersPanel.getComponents().length >= 2){
+            connectedUsersPanel.remove(1);
+        }
+
+        JPanel userListPanel = new JPanel();
+        userListPanel.setBackground(Utilities.TRANSPARENT_COLOR);
+        userListPanel.setLayout(new BoxLayout(userListPanel, BoxLayout.Y_AXIS));
+
+        for(String user : activeUsers){
+            JLabel username = new JLabel();
+            username.setText(user);
+            username.setForeground(Utilities.TEXT_COLOR);
+            username.setFont(new Font("Monospaced", Font.BOLD, 16));
+            userListPanel.add(username);
+        }
+
+        connectedUsersPanel.add(userListPanel);
+        revalidate();
+        repaint();
     }
 }

@@ -18,7 +18,7 @@ public class ChatStompClient {
     private StompSession stompSession;
     private String username;
 
-    ChatStompClient(String username) throws ExecutionException, InterruptedException {
+    ChatStompClient(MessageListener messageListener, String username) throws ExecutionException, InterruptedException {
         this.username = username;
 
         List<Transport> transports = new ArrayList<>();
@@ -28,7 +28,7 @@ public class ChatStompClient {
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         stompClient.setMessageConverter(new JacksonJsonMessageConverter());
 
-        StompSessionHandler sessionHandler = new ChatStompSessionHandler(username);
+        StompSessionHandler sessionHandler = new ChatStompSessionHandler(messageListener, username);
         String url = "ws://localhost:8080/ws"; // /ws comes from registerStompEndpoints from the WebsocketConfig file
 
         stompSession = stompClient.connectAsync(url, sessionHandler).get();
@@ -37,7 +37,7 @@ public class ChatStompClient {
     public void sendMessage(Message message) {
         try {
             stompSession.send("/app/message", message);
-            System.out.println("Message sent: from " + message.getUser() + ": " + message.getMessage()); // for debugging;
+            System.out.println("Message sent from " + message.getUser() + ": " + message.getMessage()); // for debugging;
         } catch (Exception e) {
             e.printStackTrace();
         }

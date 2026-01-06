@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
 
 @Service
 public class WebSocketSessionManager {
-    private final Set<String> activeUsernames = ConcurrentHashMap.newKeySet();
+    private final ArrayList<String> activeUsernames = new ArrayList<>();
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
