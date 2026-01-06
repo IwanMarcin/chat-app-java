@@ -4,6 +4,8 @@ import com.example.demo.Message;
 import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ public class ClientGUI extends JFrame implements MessageListener {
     private JPanel connectedUsersPanel, messagePanel;
     private ChatStompClient chatStompClient;
     private String username;
+    private JScrollPane messageScrollPane;
 
     public ClientGUI(String username) throws ExecutionException, InterruptedException {
         super("User: " + username);
@@ -31,6 +34,13 @@ public class ClientGUI extends JFrame implements MessageListener {
                     chatStompClient.disconnectUser(username);
                     ClientGUI.this.dispose();
                 }
+            }
+        });
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateMessageSize();
             }
         });
 
@@ -66,7 +76,21 @@ public class ClientGUI extends JFrame implements MessageListener {
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setBackground(Utilities.TRANSPARENT_COLOR);
-        chatPanel.add(messagePanel, BorderLayout.CENTER);
+
+        messageScrollPane = new JScrollPane(messagePanel);
+        messageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        messageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        messageScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        messageScrollPane.setBackground(Utilities.TRANSPARENT_COLOR);
+        messageScrollPane.getViewport().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                revalidate();
+                repaint();
+            }
+        });
+
+        chatPanel.add(messageScrollPane, BorderLayout.CENTER);
 
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(Utilities.addPadding(10, 10, 10, 10));
@@ -110,7 +134,12 @@ public class ClientGUI extends JFrame implements MessageListener {
         usernameLabel.setForeground(Utilities.TEXT_COLOR);
         chatMessage.add(usernameLabel);
 
-        JLabel messageLabel = new JLabel(message.getMessage());
+        JLabel messageLabel = new JLabel();
+        messageLabel.setText("<html>" +
+                "<body style='width:" + (0.60 * getWidth()) + "'px>" +
+                message.getMessage() +
+                "</body>"+
+                "</html>");
         messageLabel.setFont(new Font("Monospaced", Font.PLAIN, 18));
         messageLabel.setForeground(Utilities.TEXT_COLOR);
         chatMessage.add(messageLabel);
@@ -123,6 +152,8 @@ public class ClientGUI extends JFrame implements MessageListener {
         messagePanel.add(createChatMessageComponent(message));
         revalidate();
         repaint();
+
+        messageScrollPane.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
     }
 
     @Override
@@ -146,5 +177,20 @@ public class ClientGUI extends JFrame implements MessageListener {
         connectedUsersPanel.add(userListPanel);
         revalidate();
         repaint();
+    }
+
+    private void updateMessageSize(){
+        for(int i = 0; i < messagePanel.getComponents().length; i++){
+            Component component = messagePanel.getComponent(i);
+            if(component instanceof JPanel chatMessage){
+                if(chatMessage.getComponent(1) instanceof JLabel messageLabel){
+                    messageLabel.setText("<html>" +
+                            "<body style='width:" + (0.60 * getWidth()) + "'px>" +
+                            messageLabel.getText() +
+                            "</body>"+
+                            "</html>");
+                }
+            }
+        }
     }
 }
