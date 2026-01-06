@@ -6,7 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class ClientGUI extends JFrame {
-    private JPanel connectedUsersPanel;
+    private JPanel connectedUsersPanel, messagePanel;
     public ClientGUI(String username){
         super("User: " + username);
 
@@ -30,6 +30,7 @@ public class ClientGUI extends JFrame {
 
     private void addGuiComponents(){
         addConnectedUserComponents();
+        addChatComponents();
     }
 
     private void addConnectedUserComponents(){
@@ -44,5 +45,21 @@ public class ClientGUI extends JFrame {
         connectedUsersPanel.add(connectedUsersLabel);
 
         add(connectedUsersPanel, BorderLayout.WEST);
+    }
+
+    private void addChatComponents(){
+        JPanel chatPanel = new JPanel();
+        chatPanel.setLayout(new BorderLayout());
+        chatPanel.setBackground(Utilities.TRANSPARENT_COLOR);
+
+        messagePanel = new JPanel();
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setBackground(Utilities.TRANSPARENT_COLOR);
+        chatPanel.add(messagePanel, BorderLayout.CENTER);
+
+        messagePanel.add(new JLabel("Random Message"));
+
+        add(chatPanel, BorderLayout.CENTER);
+
     }
 }
