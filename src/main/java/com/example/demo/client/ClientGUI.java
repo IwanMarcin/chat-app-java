@@ -8,11 +8,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.ExecutionException;
 
 public class ClientGUI extends JFrame {
     private JPanel connectedUsersPanel, messagePanel;
-    public ClientGUI(String username){
+    private ChatStompClient chatStompClient;
+    private String username;
+
+    public ClientGUI(String username) throws ExecutionException, InterruptedException {
         super("User: " + username);
+        this.username = username;
+        chatStompClient = new ChatStompClient(username);
 
         setSize(1280, 720);
         setLocationRelativeTo(null);
@@ -23,6 +29,7 @@ public class ClientGUI extends JFrame {
                 int option = JOptionPane.showConfirmDialog(ClientGUI.this, "Do you want to leave?", "Exit", JOptionPane.YES_NO_OPTION);
 
                 if(option == JOptionPane.YES_OPTION){
+                    chatStompClient.disconnectUser(username);
                     ClientGUI.this.dispose();
                 }
             }
