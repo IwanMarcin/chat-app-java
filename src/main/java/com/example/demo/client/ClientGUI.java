@@ -1,14 +1,15 @@
 package com.example.demo.client;
 
 import com.example.demo.Message;
-import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 public class ClientGUI extends JFrame implements MessageListener {
@@ -124,27 +125,66 @@ public class ClientGUI extends JFrame implements MessageListener {
     }
 
     private JPanel createChatMessageComponent(Message message){
-        JPanel chatMessage = new JPanel();
-        chatMessage.setBackground(Utilities.TRANSPARENT_COLOR);
-        chatMessage.setLayout(new BoxLayout(chatMessage, BoxLayout.Y_AXIS));
-        chatMessage.setBorder(Utilities.addPadding(20, 20, 20, 20));
+        boolean isMine = message.getUser().equals(username);
+        String time = new SimpleDateFormat("HH:mm").format(new Date());
+
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.X_AXIS));
+        wrapper.setBackground(Utilities.TRANSPARENT_COLOR);
+
+        wrapper.setBorder(Utilities.addPadding(5, 2, 5, 2));
+
+        JPanel bubble = new JPanel();
+        bubble.setLayout(new BoxLayout(bubble, BoxLayout.Y_AXIS));
+        bubble.setBorder(Utilities.addPadding(10, 15, 10, 15));
+        bubble.setBackground(isMine ? Utilities.MY_MESSAGE_COLOR : Utilities.OTHER_MESSAGE_COLOR);
+        bubble.setOpaque(true);
+
+        int maxWidth = (int)(getWidth() * 0.6);
+
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        header.setBackground(Utilities.TRANSPARENT_COLOR);
 
         JLabel usernameLabel = new JLabel(message.getUser());
-        usernameLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+        usernameLabel.setFont(new Font("Monospaced", Font.BOLD, 16));
         usernameLabel.setForeground(Utilities.TEXT_COLOR);
-        chatMessage.add(usernameLabel);
 
-        JLabel messageLabel = new JLabel();
-        messageLabel.setText("<html>" +
-                "<body style='width:" + (0.60 * getWidth()) + "'px>" +
-                message.getMessage() +
-                "</body>"+
-                "</html>");
-        messageLabel.setFont(new Font("Monospaced", Font.PLAIN, 18));
-        messageLabel.setForeground(Utilities.TEXT_COLOR);
-        chatMessage.add(messageLabel);
+        JLabel timeLabel = new JLabel(time);
+        timeLabel.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        timeLabel.setForeground(Color.WHITE);
 
-        return chatMessage;
+        header.add(usernameLabel);
+        header.add(timeLabel);
+        bubble.add(header);
+
+        JTextArea textArea = new JTextArea(message.getMessage());
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        textArea.setForeground(Utilities.TEXT_COLOR);
+        textArea.setBackground(isMine ? Utilities.MY_MESSAGE_COLOR : Utilities.OTHER_MESSAGE_COLOR);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setFocusable(false);
+        textArea.setBorder(null);
+
+        textArea.setSize(maxWidth, Short.MAX_VALUE);
+        textArea.setPreferredSize(new Dimension(maxWidth, textArea.getPreferredSize().height));
+
+        bubble.add(textArea);
+
+        bubble.setMaximumSize(new Dimension(maxWidth, bubble.getPreferredSize().height));
+        bubble.setAlignmentX(isMine ? Component.RIGHT_ALIGNMENT : Component.LEFT_ALIGNMENT);
+
+        wrapper.removeAll();
+        if(isMine){
+            wrapper.add(Box.createHorizontalGlue());
+            wrapper.add(bubble);
+        } else {
+            wrapper.add(bubble);
+            wrapper.add(Box.createHorizontalGlue());
+        }
+
+        return wrapper;
     }
 
     @Override
