@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ChatStompClient {
-    private StompSession stompSession;
-    private String username;
+    private final StompSession stompSession;
+    private final String username;
 
     ChatStompClient(MessageListener messageListener, String username) throws ExecutionException, InterruptedException {
         this.username = username;
@@ -29,8 +29,10 @@ public class ChatStompClient {
         stompClient.setMessageConverter(new JacksonJsonMessageConverter());
 
         StompSessionHandler sessionHandler = new ChatStompSessionHandler(messageListener, username);
-        String url = "ws://localhost:8080/ws"; // /ws comes from registerStompEndpoints from the WebsocketConfig file
-
+        //for local server
+        // String url = "ws://localhost:8080/ws"; // /ws comes from registerStompEndpoints from the WebsocketConfig file
+        //for online server
+        String url = "https://chat-app-java-jieb.onrender.com/ws";
         stompSession = stompClient.connectAsync(url, sessionHandler).get();
     }
 
